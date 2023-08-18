@@ -4944,7 +4944,7 @@ input, select, textarea {
 	height: 100%;
 	background-color: #c8c8c8;
 	left: calc(50% - 1px);
-	animation: moveline 3s linear forwards;
+	animation: moveline 5s linear forwards;
 }
 
 @keyframes moveline {
@@ -4984,6 +4984,12 @@ input, select, textarea {
 .timeline-item:nth-child(3){
 	animation-delay: 2s;
 }
+.timeline-item:nth-child(4){
+	animation-delay: 3s;
+}
+.timeline-item:nth-child(5){
+	animation-delay: 4s;
+}
 
 .timeline-item:last-child{
 	margin-bottom: 0;
@@ -5013,7 +5019,6 @@ input, select, textarea {
     background-color: #1e252d;
 	padding: 30px;
 	border-radius: 5px;
-	
 }
 
 .timeline-content h2{
