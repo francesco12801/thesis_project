@@ -12,3 +12,9 @@ TODO:
 - filtri distanza 
 - random choice for tables
 - cerca locale
+
+Task gianluca:
+- Registrazione DONE
+- modifica profilo DONE > foto profilo modificabile
+- locali recenti lista
+- recensione locali
