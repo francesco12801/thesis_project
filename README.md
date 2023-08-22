@@ -19,3 +19,4 @@ Task gianluca:
 - richieste amicizia ad altre persone
 - locali recenti lista
 - recensione locali
+- creare gruppo per eventi
