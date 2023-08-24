@@ -16,7 +16,7 @@ const initializePassport = require("./passportConfig");
 var result;
 initializePassport(passport); 
 
-const PORT = process.env.PORT || 4050; 
+const PORT = process.env.PORT || 5050; 
 
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: false})); 
