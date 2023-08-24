@@ -18,5 +18,9 @@ Task gianluca:
 - modifica profilo DONE > foto profilo modificabile
 - richieste amicizia ad altre persone
 - locali recenti lista
-- recensione locali
+- recensione locali 
 - creare gruppo per eventi
+TODO
+-card recensione
+-creazione dinamica delle card nel profilo
+-limite di 1 recensione per locale
