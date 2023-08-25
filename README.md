@@ -16,7 +16,6 @@ TODO:
 Task gianluca:
 - Registrazione DONE
 - modifica profilo DONE > foto profilo modificabile
-- richieste amicizia ad altre persone
 - locali recenti lista
 - recensione locali 
 - creare gruppo per eventi
