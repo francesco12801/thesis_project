@@ -8,7 +8,7 @@ const fileUpload = require('express-fileupload');
 require("dotenv").config();
 const session = require('express-session'); 
 const flash = require("express-flash"); 
-const passport = require("passport"); 
+const passport = require("passport");
 const nodeMailer = require('nodemailer');
 
 var request = require('request-promise');
@@ -16,7 +16,7 @@ const initializePassport = require("./passportConfig");
 var result;
 initializePassport(passport); 
 
-const PORT = process.env.PORT || 5050; 
+const PORT = process.env.PORT || 4060; 
 
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: false})); 
@@ -48,6 +48,35 @@ app.get('/users/login', checkAuthenticated, (req, res) => {
     res.render("login.ejs");
 });
 
+app.get("/users/profile/review",checkNotAuthenticated, (req, res) => {
+    res.render("review.ejs",{ user: req.user});
+});
+
+app.post("/users/profile/review", (req, res) => {
+    const locale = req.body.locale;
+    const recensione = req.body.recensione;
+
+    if (recensione.length < 1){
+        console.log("La recensione non può essere vuota");
+    }
+    else{
+
+        pool.query(`
+        INSERT INTO reviews
+        VALUES ($1,$2,$3)`, [req.user.username,locale,recensione], (err, res) => {
+            if (err) throw err;
+        })
+
+    }
+    res.redirect('/');
+
+    //aggiungi al database
+
+    // console.log('Scelta:', locale);
+    // console.log('Testo:', recensione);
+    //reindirizza al profilo
+});
+
 
 app.get('/users/profile',checkNotAuthenticated, (req, res) =>{
     res.render("profile", { user: req.user.name }); 
@@ -55,6 +84,15 @@ app.get('/users/profile',checkNotAuthenticated, (req, res) =>{
 
 app.get('/users/editProfile',checkNotAuthenticated, (req, res) =>{
     res.render("editProfile",{ user: req.user});
+});
+
+app.get('/review/list',checkNotAuthenticated,(req,res) => {
+    pool.query(`SELECT *
+                FROM reviews
+                WHERE username = $1`, [req.user.username], (err,results) => {
+                    if (err) throw err;
+                    res.send(JSON.stringify(results.rows));
+                })
 });
 
 
@@ -187,7 +225,6 @@ app.get("/profile/list", (req,res) => {
                     if (err) throw err;
                     res.send(JSON.stringify(results.rows));
                 })
-    
 })
 
 app.post('/users/map/update',(req, res) => {
@@ -311,4 +348,7 @@ function checkAuthenticated(req, res, next) {
 app.listen(PORT, () =>{
     console.log(`Server running on port ${PORT}`);
 });
+
+//review
+
 

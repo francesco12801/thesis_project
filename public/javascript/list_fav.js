@@ -2,13 +2,13 @@ fetch('/profile/list')
   .then(response => response.json())
   .then(data => {
 
-    console.log(data); 
+    // console.log(data); 
 
     var grid = document.getElementById("grid-layout-cards");
     var card;
     
     for (var i = 0; i < data.length; i++){
-        console.log(data[i].website);
+        // console.log(data[i].website);
         card = createHTML(`
         <div class="card">
             <div class="card-body" style="position:relative;">
@@ -23,10 +23,6 @@ fetch('/profile/list')
 
       grid.appendChild(card);
     }
-
-    
-
-
   })
   .catch(error => console.error(error));
 

@@ -1,4 +1,4 @@
-@import url(fontawesome-all.min.css);
+
 @import url("https://fonts.googleapis.com/css?family=Merriweather:300,700,300italic,700italic|Source+Sans+Pro:900");
 
 
@@ -4907,6 +4907,7 @@ input, select, textarea {
 		display: grid;
 		grid-template-columns: auto auto auto auto;
 		grid-row-gap: 60px;
+		justify-content: center;
 	  }
 
 	   /* GRID LAYOUT CARDS */
@@ -5092,3 +5093,48 @@ input, select, textarea {
 	
 }
 
+/* REVIEW BUTTON */
+.container-review {
+	display: grid;
+	grid-template-columns: 30% 70%;
+}
+.left-div {
+	padding: 20px;
+	background-color: #f0f0f0;
+}
+.right-div {
+	padding: 20px;
+	background-color: #f9f9f9;
+}
+#reviews-post {
+	margin: 15px;
+	background-color: #ffffff;
+	border: 1px solid #cccccc;
+	padding: 20px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	max-width: 400px;
+	text-align: center;
+	border-radius: 3%;
+  }
+  
+  .box-title {
+	font-size: 24px;
+	margin: 0 0 7px;
+	color: #333333;
+  }
+
+  .box-subtitle {
+	font-size: 15px;
+	margin-top: 3px;
+	color: #666666;
+  }
+  
+  .box-text {
+	font-size: 16px;
+	color: #666666;
+  }  
+
+  .container-reviews-grid {
+	display: grid;
+	grid-template-columns: auto auto auto auto;;
+  }
