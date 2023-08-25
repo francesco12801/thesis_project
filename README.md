@@ -18,14 +18,11 @@ Task gianluca:
 - modifica profilo DONE
 - contatta gli amministratori DONE
 - locali recenti lista
-- recensione locali 
+- recensione locali
 - creare gruppo per eventi
 - mail per invitare amici
 - sezione blog
 - 
-
-
-
 TODO
 - card recensione
 - creazione dinamica delle card nel profilo
@@ -37,4 +34,4 @@ Task Federico:
 - pagina con i contatti DONE
 - creare e modificare bio
 - deepl traduzione
-- galleria fotografica in profilo
+- galleria fotografica
