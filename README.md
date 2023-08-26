@@ -24,10 +24,7 @@ Task gianluca:
 - mail per invitare amici
 - sezione blog
 - elimina profilo
-TODO
-- card recensione
-- creazione dinamica delle card nel profilo
-- limite di 1 recensione per locale
+
 
 Task Federico:
 - cambio foto profilo
