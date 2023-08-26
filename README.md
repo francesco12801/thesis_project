@@ -19,7 +19,7 @@ Task gianluca:
 - contatta gli amministratori DONE
 - locali recenti lista
 - recensione locali DONE
-- elimina recensione
+- elimina recensione -> da mettere aggiornamento schermata
 - creare gruppo per eventi
 - mail per invitare amici
 - sezione blog
