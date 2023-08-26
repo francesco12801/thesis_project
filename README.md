@@ -21,6 +21,7 @@ Task gianluca:
 - recensione locali DONE
 - elimina recensione -> da mettere aggiornamento schermata
 - creare gruppo per eventi
+- se c'è pagina locale->lista recensioni degli utenti
 - mail per invitare amici
 - sezione blog
 - elimina profilo
