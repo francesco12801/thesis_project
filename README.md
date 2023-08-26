@@ -22,6 +22,7 @@ Task gianluca:
 - creare gruppo per eventi
 - mail per invitare amici
 - sezione blog
+- elimina profilo
 - 
 TODO
 - card recensione
