@@ -22,6 +22,7 @@ Task gianluca:
 - Registrazione DONE
 - modifica profilo DONE
 - contatta gli amministratori DONE
+- elimina profilo DONE
 - locali recenti lista
 - recensione locali DONE
 - elimina recensione -> da mettere aggiornamento schermata
@@ -29,8 +30,6 @@ Task gianluca:
 - se c'è pagina locale->lista recensioni degli utenti
 - mail per invitare amici
 - sezione blog
-- elimina profilo
-
 
 Task Federico:
 - cambio foto profilo
