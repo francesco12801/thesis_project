@@ -1,5 +1,10 @@
 # thesis_project
 
+fix al frontend in profilo
+foreign key sul database
+controlli sui campi signup
+fixare data
+
 personal task (Francesco): 
 - mappa DONE 
 - inserimento locali DONE
