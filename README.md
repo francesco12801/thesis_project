@@ -19,11 +19,11 @@ Task gianluca:
 - contatta gli amministratori DONE
 - locali recenti lista
 - recensione locali
+- elimina recensione
 - creare gruppo per eventi
 - mail per invitare amici
 - sezione blog
 - elimina profilo
-- 
 TODO
 - card recensione
 - creazione dinamica delle card nel profilo
