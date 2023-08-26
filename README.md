@@ -18,7 +18,7 @@ Task gianluca:
 - modifica profilo DONE
 - contatta gli amministratori DONE
 - locali recenti lista
-- recensione locali
+- recensione locali DONE
 - elimina recensione
 - creare gruppo per eventi
 - mail per invitare amici
