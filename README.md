@@ -28,6 +28,7 @@ Task gianluca:
 - mail per invitare amici DONE
 - fare post DONE
 - mettere like a post
+- logout
 - locali recenti lista
 - creare gruppo per eventi
 - se c'è pagina locale->lista recensioni degli utenti
