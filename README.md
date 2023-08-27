@@ -25,11 +25,13 @@ Task gianluca:
 - elimina profilo DONE
 - recensione locali DONE
 - elimina recensione DONE
+- mail per invitare amici DONE
+- fare post
+- mettere like a post
 - locali recenti lista
 - creare gruppo per eventi
 - se c'è pagina locale->lista recensioni degli utenti
-- mail per invitare amici
-- sezione blog
+RESPONSIVENESS
 
 Task Federico:
 - cambio foto profilo DONE
