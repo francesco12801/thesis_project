@@ -18,7 +18,6 @@ fetch('/profile/list')
         }
 
         if (found.length == 0){
-            console.log(data[i].title);
             option = createHTML(`
             <option value="${data[i].title}">${data[i].title}</option>
             `);

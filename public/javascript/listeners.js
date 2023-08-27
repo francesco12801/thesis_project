@@ -51,3 +51,28 @@ function logOut(){
     window.open("/","_self");
     return;
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    const popupButton = document.getElementById("popup-button");
+    const popup = document.getElementById("post-popup");
+    const closePopup = document.getElementById("close-popup");
+    const popupTextarea = document.getElementById("popup-textarea");
+    
+      
+    popupButton.addEventListener("click", () => {
+        if (popup.style.display == "none")
+            popup.style.display = "block";
+        else popup.style.display == "none"
+    });
+      
+    closePopup.addEventListener("click", () => {
+        popup.style.display = "none";
+    });
+    
+    window.addEventListener("click", (event) => {
+        if (event.target === popup) {
+        popup.style.display = "none";
+        }
+    });
+    
+    });

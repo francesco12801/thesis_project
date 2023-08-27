@@ -89,6 +89,66 @@ app.get('/review/list',checkNotAuthenticated, (req,res) => {
                 })
 });
 
+app.get('/socialNetwork', checkNotAuthenticated, (req,res) => {
+    res.render('socialNetwork',{user: req.user});
+});
+
+app.post("/send_post", checkNotAuthenticated, (req,res) => {
+    const post = req.body.posttext;
+
+    pool.query(`
+                INSERT INTO post (username, text)
+                VALUES ($1,$2)
+                RETURNING *`, [req.user.username,post], (err,res) => {
+                    if(err){
+                        throw err; 
+                    }
+                });
+    res.render('socialNetwork',{user: req.user});
+});
+app.get("/get_post",checkNotAuthenticated, (req,res) => {
+    pool.query(`
+                SELECT *
+                FROM post`, (err, results) => {
+                    if(err){
+                        throw err; 
+                    }
+                    res.send(JSON.stringify(results.rows));
+                });
+})
+//aggiungere like ad un post
+app.put("/posts/:postId/like", async (req, res) => {
+    const postId = req.params.postId;
+
+    pool.query(`UPDATE post
+                SET likes = likes + 1
+                WHERE id = $1
+                RETURNING *`,[postId] , (req, result) => {
+                    if (err)
+                        throw err;
+                     }
+                );
+
+  });
+//   (function(index) {
+//     document.getElementById('heart'+i).addEventListener('click', function() {
+//         hrt = document.getElementById('heart'+index);
+//         fetch('')
+//     })
+// })
+
+app.get('/post/get_like',checkNotAuthenticated, (req,res) => {
+    pool.query(`
+                SELECT *
+                FROM likes
+                WHERE username = $1`, [req.user.username], (err, results) => {
+                    if(err){
+                        throw err; 
+                    }
+                    res.send(JSON.stringify(results.rows));
+                });
+});
+
 //Invita gli amici
 app.post("/send_email/friends", (req, res) =>{
     var _name = req.body.name;
