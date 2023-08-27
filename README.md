@@ -36,5 +36,6 @@ Task Federico:
 - roadmap DONE
 - pagina con i contatti DONE
 - creare e modificare bio DONE
+- finestra informativa per i locali sulla mappa DONE
 - deepl traduzione
 - galleria fotografica
