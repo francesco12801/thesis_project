@@ -14,7 +14,7 @@ fetch('../jsonFiles/discoList.json')
     .then(response => response.json())
         .then(data => {
             data.forEach(locals => {
-                dictListDisco.push([locals.title, locals.gps_coordinates.latitude, locals.gps_coordinates.longitude, locals.website]);
+                dictListDisco.push([locals.title, locals.gps_coordinates.latitude, locals.gps_coordinates.longitude, locals.website, locals.thumbnail, locals.address, locals.rating]);
             });
         })
         .catch(error => {
@@ -75,6 +75,18 @@ function showLocation(position) {
             // map: map,
             icon: '/iconpng/disco_marker2.png',
         });
+
+        // Creazione infoWindow
+        var iw = new google.maps.InfoWindow({
+            content: '<div style="text-align: center;">' +
+                    '<h3>' + disco[0] + '</h3><br/>' +
+                    (disco[4] ? '<div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;"><img src="' + disco[4] +  '"style="width: 200px; height: 200px;"></div>' : '') +
+                    '<p style="text-align: center;">' + disco[5] + '</p><br/>' +
+                    (disco[6] ? '<p style="text-align: center;">Rating: '+ disco[6] + '</p></div>' : '</div>'),
+            maxWidth: 400
+        });
+
+        attachInfoWindow(marker, iw);
         markers.push(marker);
     }
     
@@ -105,4 +117,13 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
 
 function deg2rad(deg) {
     return deg * (Math.PI / 180)
+}
+
+function attachInfoWindow(marker, iw) {
+    marker.addListener('mouseover', function() {
+        iw.open(map, marker);
+    });
+    marker.addListener('mouseout', function() {
+        iw.close();
+    });
 }
