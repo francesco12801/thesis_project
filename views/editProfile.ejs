@@ -28,9 +28,17 @@
                 <div class="bg-white shadow overflow-hidden w-100">
                     <div class="px-4 pt-0 bg-white border-bottom">
                         <div class="media align-items-end ">
-                            <div class="profile py-4 mr-3 ">
+                            <!--<div class="profile py-4 mr-3 ">
                                 <img src="../iconpng/profile.jpg" alt="..." width="130" class="rounded-circle" alt="Alt text" />
+                            </div>-->
+                            <div class="profile py-4 mr-3 ">
+                                <% if (user.img_src) { %>
+                                    <img src="../uploads/<%= user.img_src %>" alt="..." width="130" class="rounded-circle">
+                                <% } else { %>
+                                    <img src="../iconpng/profile.jpg" alt="..." width="130" class="rounded-circle">
+                                <% } %>
                             </div>
+                            </form>
                             <div class="media-body mb-4 py-5 px-2">
                                 <center><h2 class="mt-0 mb-2">Welcome on Let's Party!</h2></center>
                                 <center><h4 class = "mt-0 ml-2"></small>Hello <%= user.name %> 🥳</h4></center>
@@ -40,7 +48,9 @@
                     <div class="px-4 bg-white">
                         <div class="py-4">
                             <h5 class="mb-3">About You</h5>
-                                <form action="/users/editProfile" method="POST">
+                                <form action="/users/editProfile" method="POST" enctype="multipart/form-data">
+                                    <label for="image-input-button" class="btn btn-light" id="image-input-label">Select Image</label>
+                                    <input type="file" name="profileImage" accept="image" id="image-input-button" style="visibility: hidden;"/>
                                     <section class="split contact" action="">
                                         <div>
                                             <div class="field" style="width: 50%; float: left; padding: 20px;">
@@ -65,7 +75,7 @@
                                         </div>
                                         <br />
                                         <div>
-                                            <div class="field" style="width: 50%; float: left; padding: 20px; margin-bottom: 60px;">
+                                            <div class="field" style="width: 50%; float: left; padding: 20px;">
                                                 <label for="Address">Address</label>
                                                 <input type="text" name="address" value="<%=user.address%>" id="address" required/>
                                             </div>
@@ -78,6 +88,12 @@
                                                 <input type="tel" name="p_num" value="<%=user.p_num%>" id="p_num" required/>
                                             </div>
                                             <br />
+                                        </div>
+                                        <div>
+                                            <div class="field" style="width: 100%; float: left; padding: 20px; margin-bottom: 60px;">
+                                                <label for="bio">Bio</label>
+                                                <textarea name="bio" id="bio" rows="2" cols="50" <% if (user.bio) { %>placeholder="<%= user.bio %>"<% } else { %>placeholder="A little about me..."<% } %>><%= user.bio %></textarea>
+                                            </div>
                                         </div>
                                     </section>
                                     <br />
@@ -100,5 +116,13 @@
 			<script src="../javascript/breakpoints.min.js"></script>
 			<script src="../javascript/util.js"></script>
 			<script src="../javascript/main.js"></script>
+            <script src="../javascript/image.js"></script>
+            <!-- JS per cambiare la label del bottone di input con il file caricato -->
+            <script>
+                $("#image-input-button").change(function() {
+                    filename = this.files[0].name;
+                    $('#image-input-label').text(filename);
+                });
+            </script>
     </body>
 </html>

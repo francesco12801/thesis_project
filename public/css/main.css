@@ -2330,6 +2330,12 @@ input, select, textarea {
 				background-color: #004e64;
 			}
 
+	/*#image-input-label, #image-input-button {
+		position: absolute;
+		top: 130px;
+		left: 150px;
+	}*/
+
 /* Form */
 
 	form {

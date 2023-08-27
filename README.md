@@ -29,9 +29,9 @@ TODO
 - limite di 1 recensione per locale
 
 Task Federico:
-- cambio foto profilo
+- cambio foto profilo DONE
 - roadmap DONE
 - pagina con i contatti DONE
-- creare e modificare bio
+- creare e modificare bio DONE
 - deepl traduzione
 - galleria fotografica
