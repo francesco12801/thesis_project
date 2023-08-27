@@ -68,13 +68,7 @@ app.post("/users/profile/review", (req, res) => {
         })
 
     }
-    res.redirect('/');
-
-    //aggiungi al database
-
-    // console.log('Scelta:', locale);
-    // console.log('Testo:', recensione);
-    //reindirizza al profilo
+    res.redirect('/users/profile');
 });
 
 
@@ -86,7 +80,7 @@ app.get('/users/editProfile',checkNotAuthenticated, (req, res) =>{
     res.render("editProfile",{ user: req.user});
 });
 
-app.get('/review/list',checkNotAuthenticated,(req,res) => {
+app.get('/review/list',checkNotAuthenticated, (req,res) => {
     pool.query(`SELECT *
                 FROM reviews
                 WHERE username = $1`, [req.user.username], (err,results) => {
@@ -95,10 +89,70 @@ app.get('/review/list',checkNotAuthenticated,(req,res) => {
                 })
 });
 
+//Invita gli amici
+app.post("/send_email/friends", (req, res) =>{
+    var _name = req.body.name;
+    var _email = req.body.email;
+    var _msg = req.body.message;
+
+    let errors = []; 
+
+    if (!_name || !_email){
+        errors.push({message: "Please enter all fields"});
+    }
+
+    var transporter = nodeMailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.GMAIL_USER,
+            pass: process.env.GMAIL_PASSWORD
+        }
+    })
+
+    var mailOptions = {
+        from: process.env.GMAIL_USER,
+        to: _email,
+        subject: `Hi ${_name}, you have been invited to Let's Party.`,
+        html: `${_msg}`
+    }
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error){
+            throw error;
+        }
+        else {
+            console.log("email sent");
+        }
+        res.render("profile", { user: req.user.name });
+    })
+});
+
 
 app.get("/logout",(req, res) => {
     req.session.destroy();
-    res.redirect('/');
+});
+
+app.post("/users/deleteProfile", (req,res) => {
+    res.redirect("/users/login");
+    pool.query(`
+                DELETE FROM users 
+                WHERE username = $1`, [req.user.username], (err,results) => {
+                    if (err) throw err;
+                }
+                );
+    pool.query(`
+                DELETE FROM fav 
+                WHERE utente = $1`, [req.user.username], (err,results) => {
+                    if (err) throw err;
+                }
+                );
+    pool.query(`
+                DELETE FROM reviews 
+                WHERE username = $1`, [req.user.username], (err,results) => {
+                    if (err) throw err;
+                }
+                );
+    req.session.destroy();
+    
 });
   
 
@@ -237,6 +291,17 @@ app.post('/users/map/update',(req, res) => {
         })     
 })
 
+app.post('/review/list/update', (req,res) => {
+    let {title, username} = req.body.card;
+    pool.query(`
+        DELETE FROM reviews
+        WHERE username = $2 and title = $1`,[title,username], (err,res) => {
+            if (err) throw err;
+        }
+        );
+    
+});
+
 app.post('/users/map/delete', (req,res) => {
     let {title, type, address, dist, phone, website} = req.body.card;
     pool.query(`
@@ -246,6 +311,67 @@ app.post('/users/map/delete', (req,res) => {
         }) 
 })
 
+
+app.post("/send_email", (req, res) =>{
+    var _name = req.body.name;
+    var _email = req.body.email;
+    var _msg = req.body.message;
+
+    if (!_name || !_email || !_msg){
+        errors.push({message: "Please enter all fields"});
+    }
+
+    var transporter = nodeMailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.GMAIL_USER,
+            pass: process.env.GMAIL_PASSWORD
+        }
+    })
+
+    var mailOptions = {
+        from: process.env.GMAIL_USER,
+        to: process.env.DESTINATION,
+        subject: `Message from ${_name}, ${_email}`,
+        html: `${_msg}`
+    }
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error){
+            throw error;
+        }
+        else {
+            console.log("email sent");
+        }
+        res.redirect("/");
+    })
+})
+
+//aggiornare tutte le tabelle mediante CASCADE e le FOREIGN KEY
+app.post('/users/editProfile', (req, res) => {
+    const { username, email, address, p_num } = req.body;
+    var oldUser = req.user.username;
+    //query che aggiorna il database dei favoriti
+    pool.query(`UPDATE fav
+                SET utente = $1
+                WHERE utente = $2;
+    `, [username, oldUser], (err, res) => {
+        if (err) throw err;
+    });
+    var oldMail = req.user.email;
+    pool.query(`
+                UPDATE users 
+                SET username = $1, email = $2, address = $3, p_num = $4
+                WHERE name = $5 and surname = $6 and email = $7;
+                `, [username, email, address, p_num, req.user.name,req.user.surname, oldMail], (err, result) => {
+      if (err) {
+        console.error('Error in modify profile:', err.stack);
+        res.status(500).send('Error in modify profile');
+      }else{
+        console.log("Good job");
+        res.redirect("/");
+      }
+    });
+})
 
 app.post("/send_email", (req, res) =>{
     var _name = req.body.name;
@@ -275,33 +401,6 @@ app.post("/send_email", (req, res) =>{
         }
         res.redirect("/");
     })
-})
-
-
-app.post('/users/editProfile', (req, res) => {
-    const { username, email, address, p_num } = req.body;
-    var oldUser = req.user.username;
-    //query che aggiorna il database dei favoriti
-    pool.query(`UPDATE fav
-                SET utente = $1
-                WHERE utente = $2;
-    `, [username, oldUser], (err, res) => {
-        if (err) throw err;
-    });
-    var oldMail = req.user.email;
-    pool.query(`
-                UPDATE users 
-                SET username = $1, email = $2, address = $3, p_num = $4
-                WHERE name = $5 and surname = $6 and email = $7;
-                `, [username, email, address, p_num, req.user.name,req.user.surname, oldMail], (err, result) => {
-      if (err) {
-        console.error('Error in modify profile:', err.stack);
-        res.status(500).send('Error in modify profile');
-      }else{
-        console.log("Good job");
-        res.redirect("/");
-      }
-    });
 })
 
 
