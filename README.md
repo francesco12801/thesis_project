@@ -26,7 +26,7 @@ Task gianluca:
 - recensione locali DONE
 - elimina recensione DONE
 - mail per invitare amici DONE
-- fare post
+- fare post DONE
 - mettere like a post
 - locali recenti lista
 - creare gruppo per eventi
