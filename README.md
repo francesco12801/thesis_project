@@ -30,6 +30,7 @@ Task gianluca:
 - mettere like a post DONE
 - logout DONE
 - possibilità di eliminare post
+- possibilità di visualizzare un altro profilo
 - pubblicare foto nel post
 - locali recenti lista
 - creare gruppo per eventi
