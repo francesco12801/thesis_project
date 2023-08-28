@@ -36,6 +36,7 @@ Task gianluca:
 RESPONSIVENESS
 TODO
 Capire perchè non legge i parametri
+aggiornare tabella like quando tolto
 
 Task Federico:
 - cambio foto profilo DONE
