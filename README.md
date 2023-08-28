@@ -31,6 +31,7 @@ Task gianluca:
 - logout DONE
 - possibilità di eliminare post
 - possibilità di visualizzare un altro profilo
+- login con google
 - pubblicare foto nel post
 - locali recenti lista
 - creare gruppo per eventi
