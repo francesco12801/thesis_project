@@ -28,7 +28,7 @@ Task gianluca:
 - mail per invitare amici DONE
 - fare post DONE
 - mettere like a post DONE
-- logout
+- logout DONE
 - possibilità di eliminare post
 - pubblicare foto nel post
 - locali recenti lista
