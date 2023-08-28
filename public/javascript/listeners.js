@@ -48,7 +48,8 @@ function logOut(){
         method: 'POST',
     }
     );
-    window.open("/","_self");
+    window.location.replace('/');
+    // window.open("/","_self");
     return;
 }
 

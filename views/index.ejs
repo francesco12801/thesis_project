@@ -39,6 +39,14 @@
 						<li><a href="/users/profile">PROFILE</a></li>
 						</ul>
 					</nav>
+
+					<script>
+						window.onload = function() {
+						  if (typeof window.history.pushState === 'function') {
+							window.history.pushState({}, 'Page Title', '/');
+						  }
+						}
+					  </script>
                     
 
 				<!-- Main -->

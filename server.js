@@ -117,25 +117,32 @@ app.get("/get_post",checkNotAuthenticated, (req,res) => {
                 });
 })
 //aggiungere like ad un post
-app.put("/posts/:postId/like", async (req, res) => {
+app.put("/posts/:postId/like", (req, res) => {
     const postId = req.params.postId;
+    const value = req.body.value;
 
     pool.query(`UPDATE post
-                SET likes = likes + 1
+                SET likes = likes + $2
                 WHERE id = $1
-                RETURNING *`,[postId] , (req, result) => {
+                RETURNING *`,[postId, value] , (err, result) => {
                     if (err)
                         throw err;
                      }
                 );
-
+    if (value > 0){
+        pool.query(`INSERT INTO likes (username, post_id)
+                    VALUES ($1, $2)`, [req.user.username, postId], (err,result) => {
+                        if (err) throw err;
+                    });
+    } else{
+        pool.query(`DELETE FROM likes
+                    WHERE username = $1 and post_id = $2`, [req.user.username, postId],(err,result) => {
+                        if (err) throw err;
+                        }
+                    );
+    }
   });
-//   (function(index) {
-//     document.getElementById('heart'+i).addEventListener('click', function() {
-//         hrt = document.getElementById('heart'+index);
-//         fetch('')
-//     })
-// })
+
 
 app.get('/post/get_like',checkNotAuthenticated, (req,res) => {
     pool.query(`
@@ -187,8 +194,15 @@ app.post("/send_email/friends", (req, res) =>{
 });
 
 
-app.get("/logout",(req, res) => {
-    req.session.destroy();
+app.post("/logout",(req, res) => {
+    console.log("logout");
+    try {
+        req.logout(function(err) {
+            if (err) return next(err); });
+      } catch (err) {
+        console.error('Error during logout:', err);
+        res.status(500).send('Error during logout');
+      }
 });
 
 app.post("/users/deleteProfile", (req,res) => {
@@ -211,6 +225,18 @@ app.post("/users/deleteProfile", (req,res) => {
                     if (err) throw err;
                 }
                 );
+    pool.query(`
+                DELETE FROM likes
+                WHERE username = $1`, [req.user.username], (err,results) => {
+                    if (err) throw err;
+                }
+                );
+    pool.query(`
+                DELETE FROM post 
+                WHERE username = $1`, [req.user.username], (err,results) => {
+                    if (err) throw err;
+                }
+                );              
     req.session.destroy();
     
 });

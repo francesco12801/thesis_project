@@ -8,7 +8,6 @@ fetch('/get_post')
     var post;
     var heart_id;
     var heart_map = new Map();
-    var className;
 
     const response = await fetch('/post/get_like');
     const like_list = await response.json();
@@ -16,32 +15,66 @@ fetch('/get_post')
 
     for (var i = 0; i < data.length; i++){
         var filter = like_list.filter((function(n) {return n.post_id == i}));
-        if (filter.length > 0) className = 'fa-solid fa-heart';
-        else className = 'fa-regular fa-heart';
         heart_id = 'heart' + data[i].id;
         post = createHTML(`
                         <div class="post">
                             <h3>${data[i].username}</h3>
                             <p>${data[i].text}</p>
-                            <i class="${className}" id='${heart_id}' style="position: relative;"></i>
+                            <i class="${filter.length > 0 ? 'fa-solid fa-heart': 'fa-regular fa-heart'}" id='${heart_id}' style="position: relative;"></i>
                        </div>
         `);
+        heart_map.set(heart_id, {
+            username: data[i].username,
+            text: data[i].text,
+            id: data[i].id
+        })
+
         container.appendChild(post);
 
     }
-    //TODO salvare like, cambiare classe del cuore
-    for (var i = 0; i < data.length; i++){
-        (function(index) {
+    console.log(heart_map);
+    var send_value = 1;
+    for (var i = 1; i <= heart_map.size; i++){
+        (function (index) {
             document.getElementById('heart'+i).addEventListener('click', function() {
-                hrt = document.getElementById('heart'+index);
-                fetch('/posts/${index}/like', {
-                    method: 'PUT'
-                });
+                bn = document.getElementById('heart'+index);
+                //vuoto -> pieno: aggiungi like e cambia classe
+                if (bn.className == 'fa-regular fa-heart'){
+                    bn.className = 'fa-solid fa-heart';
+                    send_value = 1;
+                    //aggiorna like
+                    fetch(`/posts/${index}/like`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                          },
+                        body: JSON.stringify({ value: send_value })
+                    });
+                    //aggiorna tabella like
+                    fetch(`/posts/${index}/insert`, {
+                        method: 'POST'
+                    });
+                } else {
+                    send_value = -1;
+                    bn.className = 'fa-regular fa-heart';
+                    //aggiorna like
+                    fetch(`/posts/${index}/like`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                          },
+                        body: JSON.stringify({ value: send_value })
+                    });
+                    //aggiorna tabella like
+                    fetch(`/posts/${index}/delete`, {
+                        method: 'POST'
+                    });
+                }
+                    
                 return;
-            });
-        });
+            })
+        })(i);
     }
-
 });
 
 
