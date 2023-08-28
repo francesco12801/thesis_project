@@ -27,16 +27,13 @@ Task gianluca:
 - elimina recensione DONE
 - mail per invitare amici DONE
 - fare post DONE
-- mettere like a post 
+- mettere like a post DONE
 - logout
 - pubblicare foto nel post
 - locali recenti lista
 - creare gruppo per eventi
 - se c'è pagina locale->lista recensioni degli utenti
 RESPONSIVENESS
-TODO
-Capire perchè non legge i parametri
-aggiornare tabella like quando tolto
 
 Task Federico:
 - cambio foto profilo DONE
