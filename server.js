@@ -7,7 +7,7 @@ var path = require('path');
 require("dotenv").config();
 const session = require('express-session'); 
 const flash = require("express-flash"); 
-const passport = require("passport"); 
+const passport = require("passport");
 const nodeMailer = require('nodemailer');
 const multer = require("multer");
 
@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
 })
 const upload = multer({ storage: storage });
 
-const PORT = process.env.PORT || 4050; 
+const PORT = process.env.PORT || 4060; 
 
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true})); 
@@ -57,6 +57,30 @@ app.get('/users/login', checkAuthenticated, (req, res) => {
     res.render("login.ejs");
 });
 
+app.get("/users/profile/review",checkNotAuthenticated, (req, res) => {
+    res.render("review.ejs",{ user: req.user});
+});
+
+app.post("/users/profile/review", (req, res) => {
+    const locale = req.body.locale;
+    const recensione = req.body.recensione;
+
+    if (recensione.length < 1){
+        console.log("La recensione non può essere vuota");
+    }
+    else{
+
+        pool.query(`
+        INSERT INTO reviews
+        VALUES ($1,$2,$3)`, [req.user.username,locale,recensione], (err, res) => {
+            if (err) throw err;
+        })
+
+    }
+    res.redirect('/users/profile');
+});
+
+
 app.get('/users/profile',checkNotAuthenticated, (req, res) =>{
     res.render("profile", { user: req.user.name, imgSrc: req.user.img_src, bio: req.user.bio, username: req.user.username});
 });
@@ -71,15 +95,203 @@ app.get("/users/partners", checkNotAuthenticated, (req, res) => {
     res.render("partners", { clubs });
 });
 
+app.get('/review/list/:name',checkNotAuthenticated, (req,res) => {
+    var name = req.params.name == '0' ? req.user.username : req.params.name;
+    pool.query(`SELECT *
+                FROM reviews
+                WHERE username = $1`, [name], (err,results) => {
+                    if (err) throw err;
+                    res.send(JSON.stringify(results.rows));
+                });
+    
+});
 
-app.get("/logout",(req, res) => {
+app.get('/socialNetwork', checkNotAuthenticated, (req,res) => {
+    res.render('socialNetwork',{user: req.user});
+});
+
+app.post("/send_post", checkNotAuthenticated, (req,res) => {
+    const post = req.body.posttext;
+
+    pool.query(`
+                INSERT INTO post (username, text)
+                VALUES ($1,$2)
+                RETURNING *`, [req.user.username,post], (err,res) => {
+                    if(err){
+                        throw err; 
+                    }
+                });
+    res.render('socialNetwork',{user: req.user});
+});
+app.get('/users/get_post/:name', checkNotAuthenticated, (req,res) => {
+    var name = req.params.name == '0' ? req.user.username : req.params.name;
+    pool.query(`
+                SELECT *
+                FROM post
+                WHERE username = $1
+                ORDER BY id DESC`,[name],(err, results) => {
+                    if(err){
+                        throw err; 
+                    }
+                    res.send(JSON.stringify(results.rows));
+                });
+});
+
+app.get("/get_post",checkNotAuthenticated, (req,res) => {
+    pool.query(`
+                SELECT *
+                FROM post
+                ORDER BY id DESC`, (err, results) => {
+                    if(err){
+                        throw err; 
+                    }
+                    res.send(JSON.stringify(results.rows));
+                });
+})
+app.post('/posts/:postId/delete', (req, res) => {
+    const postId = req.params.postId;
+    pool.query(`DELETE FROM post
+                WHERE id = $1`, [postId], (err, results) => {
+                    if (err) throw err;
+                });
+    pool.query(`DELETE FROM likes
+                WHERE post_id = $1`, [postId], (err, results) => {
+                    if (err) throw err;
+                });
+    
+})
+//aggiungere like ad un post
+app.put("/posts/:postId/like", (req, res) => {
+    const postId = req.params.postId;
+    const value = req.body.value;
+
+    pool.query(`UPDATE post
+                SET likes = likes + $2
+                WHERE id = $1
+                RETURNING *`,[postId, value] , (err, result) => {
+                    if (err)
+                        throw err;
+                     }
+                );
+    if (value > 0){
+        pool.query(`INSERT INTO likes (username, post_id)
+                    VALUES ($1, $2)`, [req.user.username, postId], (err,result) => {
+                        if (err) throw err;
+                    });
+    } else{
+        pool.query(`DELETE FROM likes
+                    WHERE username = $1 and post_id = $2`, [req.user.username, postId],(err,result) => {
+                        if (err) throw err;
+                        }
+                    );
+    }
+  });
+
+
+app.get('/post/get_like',checkNotAuthenticated, (req,res) => {
+    pool.query(`
+                SELECT post_id
+                FROM likes
+                WHERE username = $1`, [req.user.username], (err, results) => {
+                    if(err){
+                        throw err; 
+                    }
+                    res.send(JSON.stringify(results.rows));
+                });
+});
+
+//Invita gli amici
+app.post("/send_email/friends", (req, res) =>{
+    var _name = req.body.name;
+    var _email = req.body.email;
+    var _msg = req.body.message;
+
+    let errors = []; 
+
+    if (!_name || !_email){
+        errors.push({message: "Please enter all fields"});
+    }
+
+    var transporter = nodeMailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.GMAIL_USER,
+            pass: process.env.GMAIL_PASSWORD
+        }
+    })
+
+    var mailOptions = {
+        from: process.env.GMAIL_USER,
+        to: _email,
+        subject: `Hi ${_name}, you have been invited to Let's Party.`,
+        html: `${_msg}`
+    }
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error){
+            throw error;
+        }
+        else {
+            console.log("email sent");
+        }
+        res.render("profile", { user: req.user.name });
+    })
+});
+
+
+app.post("/logout",(req, res) => {
+    console.log("logout");
+    try {
+        req.logout(function(err) {
+            if (err) return next(err); });
+      } catch (err) {
+        console.error('Error during logout:', err);
+        res.status(500).send('Error during logout');
+      }
+});
+
+app.get('/users/profile/:username', (req, res) => {
+    var utente = req.params.username;
+    const data = {user : utente};
+    res.render('profile_public', data); 
+});
+
+app.post("/users/deleteProfile", (req,res) => {
+    pool.query(`
+                DELETE FROM users 
+                WHERE username = $1`, [req.user.username], (err,results) => {
+                    if (err) throw err;
+                }
+                );
+    pool.query(`
+                DELETE FROM fav 
+                WHERE utente = $1`, [req.user.username], (err,results) => {
+                    if (err) throw err;
+                }
+                );
+    pool.query(`
+                DELETE FROM reviews 
+                WHERE username = $1`, [req.user.username], (err,results) => {
+                    if (err) throw err;
+                }
+                );
+    pool.query(`
+                DELETE FROM likes
+                WHERE username = $1`, [req.user.username], (err,results) => {
+                    if (err) throw err;
+                }
+                );
+    pool.query(`
+                DELETE FROM post 
+                WHERE username = $1`, [req.user.username], (err,results) => {
+                    if (err) throw err;
+                }
+                );            
     req.session.destroy();
-    res.redirect('/');
 });
 
 
 app.get('/users/map', checkNotAuthenticated, (req,res) => {
-    res.render("map");
+    res.render("map", { user: req.user.name });
 })
 
 
@@ -194,14 +406,14 @@ app.post('/users/login', passport.authenticate('local',{
 }));
 
 
-app.get("/profile/list", (req,res) => {
+app.get("/profile/list/:name", (req,res) => {
+    var name = req.params.name == '0' ? req.user.username : req.params.name;
     pool.query(`SELECT *
                 FROM fav
-                WHERE utente = $1`, [req.user.username], (err,results) => {
+                WHERE utente = $1`, [name], (err,results) => {
                     if (err) throw err;
                     res.send(JSON.stringify(results.rows));
                 })
-    
 })
 
 app.post('/users/map/update',(req, res) => {
@@ -214,6 +426,17 @@ app.post('/users/map/update',(req, res) => {
         })     
 })
 
+app.post('/review/list/update', (req,res) => {
+    let {title, username} = req.body.card;
+    pool.query(`
+        DELETE FROM reviews
+        WHERE username = $2 and title = $1`,[title,username], (err,res) => {
+            if (err) throw err;
+        }
+        );
+    
+});
+
 app.post('/users/map/delete', (req,res) => {
     let {title, type, address, dist, phone, website} = req.body.card;
     pool.query(`
@@ -223,6 +446,67 @@ app.post('/users/map/delete', (req,res) => {
         }) 
 })
 
+
+app.post("/send_email", (req, res) =>{
+    var _name = req.body.name;
+    var _email = req.body.email;
+    var _msg = req.body.message;
+
+    if (!_name || !_email || !_msg){
+        errors.push({message: "Please enter all fields"});
+    }
+
+    var transporter = nodeMailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.GMAIL_USER,
+            pass: process.env.GMAIL_PASSWORD
+        }
+    })
+
+    var mailOptions = {
+        from: process.env.GMAIL_USER,
+        to: process.env.DESTINATION,
+        subject: `Message from ${_name}, ${_email}`,
+        html: `${_msg}`
+    }
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error){
+            throw error;
+        }
+        else {
+            console.log("email sent");
+        }
+        res.redirect("/");
+    })
+})
+
+//aggiornare tutte le tabelle mediante CASCADE e le FOREIGN KEY
+app.post('/users/editProfile', (req, res) => {
+    const { username, email, address, p_num } = req.body;
+    var oldUser = req.user.username;
+    //query che aggiorna il database dei favoriti
+    pool.query(`UPDATE fav
+                SET utente = $1
+                WHERE utente = $2;
+    `, [username, oldUser], (err, res) => {
+        if (err) throw err;
+    });
+    var oldMail = req.user.email;
+    pool.query(`
+                UPDATE users 
+                SET username = $1, email = $2, address = $3, p_num = $4
+                WHERE name = $5 and surname = $6 and email = $7;
+                `, [username, email, address, p_num, req.user.name,req.user.surname, oldMail], (err, result) => {
+      if (err) {
+        console.error('Error in modify profile:', err.stack);
+        res.status(500).send('Error in modify profile');
+      }else{
+        console.log("Good job");
+        res.redirect("/");
+      }
+    });
+})
 
 app.post("/send_email", (req, res) =>{
     var _name = req.body.name;
