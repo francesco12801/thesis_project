@@ -34,5 +34,5 @@ Task Federico:
 - pagina con i contatti DONE
 - creare e modificare bio DONE
 - finestra informativa per i locali sulla mappa DONE
-- deepl traduzione
-- galleria fotografica
+- login Google DONE
+- sezione fotografica con top locali WIP

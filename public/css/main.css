@@ -413,6 +413,100 @@ input, select, textarea {
 	.sidebar a {font-size: 18px;}
   }
 
+  /* PARTNERS */
+  .partners-container {
+	display: flex;
+	gap: 20px;
+	width: calc(100%-4rem);
+	background-color: white;
+	padding: 1.5rem;
+	height: 80vh;
+  }
+
+  .gallery {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 0px;
+	flex: 60;
+	overflow-y: auto;
+	overflow-x: hidden;
+	padding: 1rem;
+  }
+  
+  .club {
+	aspect-ratio: 1/ 1;
+	display: flex;
+	align-items: center;
+	padding: 5%;
+	background-color: transparent;
+	color: #fff;
+	transition: transform 0.3s ease;
+  }
+
+  .club:hover {
+	transform: scale(1.2);
+	cursor: pointer;
+  }
+  
+  .club img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	object-position: center;
+  }
+
+  .rankings {
+	flex: 40;
+	overflow-y: auto;
+	overflow-x: hidden;
+	padding: 0.4rem;
+	padding-left: 1.5rem;
+  }
+
+  .club-ranking {
+	transition: transform 0.15s ease;
+  }
+
+  .club-ranking:hover {
+	transform: scale(1.05);
+	cursor: pointer;
+  }
+
+	/* Nascondi le frecce di scorrimento */
+	.gallery::-webkit-scrollbar-button {
+		display: none;
+	}
+
+	/* Personalizza il colore di sfondo della barra di scorrimento */
+	.gallery::-webkit-scrollbar {
+		background-color: #f0f0f0;
+		width: 6px;
+	}
+
+	/* Personalizza il colore dell'indicatore della barra di scorrimento */
+	.gallery::-webkit-scrollbar-thumb {
+		background-color: #888;
+		border-radius: 3px;
+	}
+
+	/* Nascondi le frecce di scorrimento */
+	.rankings::-webkit-scrollbar-button {
+		display: none;
+	}
+
+	/* Personalizza il colore di sfondo della barra di scorrimento */
+	.rankings::-webkit-scrollbar {
+		background-color: #f0f0f0;
+		width: 6px;
+	}
+
+	/* Personalizza il colore dell'indicatore della barra di scorrimento */
+	.rankings::-webkit-scrollbar-thumb {
+		background-color: #888;
+		border-radius: 3px;
+	}
+
+
 /* Row */
 
 	.row {

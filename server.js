@@ -66,11 +66,17 @@ app.get('/users/editProfile',checkNotAuthenticated, (req, res) =>{
 });
 
 
+app.get("/users/partners", checkNotAuthenticated, (req, res) => {
+    const clubs = require('./public/jsonFiles/discoList.json');
+    res.render("partners", { clubs });
+});
+
+
 app.get("/logout",(req, res) => {
     req.session.destroy();
     res.redirect('/');
 });
-  
+
 
 app.get('/users/map', checkNotAuthenticated, (req,res) => {
     res.render("map");
@@ -301,6 +307,19 @@ function checkAuthenticated(req, res, next) {
     }
     res.redirect("/users/login");
   }
+
+
+app.get("/auth/google",
+    passport.authenticate('google', { scope: ["profile", "email"] })
+);
+
+app.get("/auth/google/callback",
+    passport.authenticate('google', { failureRedirect: "/" }),
+    (req, res) => {
+        // Dopo il login, reindirizza all'area riservata
+        res.redirect("/users/profile");
+    }
+);
 
 
 app.listen(PORT, () =>{
