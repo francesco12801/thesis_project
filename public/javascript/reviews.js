@@ -1,5 +1,5 @@
 //prendo la lista dei locali preferiti
-fetch('/profile/list')
+fetch('/profile/list/0')
 .then(response => response.json())
 .then(async data => {
 

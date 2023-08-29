@@ -481,33 +481,6 @@ app.post("/send_email", (req, res) =>{
     })
 })
 
-//aggiornare tutte le tabelle mediante CASCADE e le FOREIGN KEY
-app.post('/users/editProfile', (req, res) => {
-    const { username, email, address, p_num } = req.body;
-    var oldUser = req.user.username;
-    //query che aggiorna il database dei favoriti
-    pool.query(`UPDATE fav
-                SET utente = $1
-                WHERE utente = $2;
-    `, [username, oldUser], (err, res) => {
-        if (err) throw err;
-    });
-    var oldMail = req.user.email;
-    pool.query(`
-                UPDATE users 
-                SET username = $1, email = $2, address = $3, p_num = $4
-                WHERE name = $5 and surname = $6 and email = $7;
-                `, [username, email, address, p_num, req.user.name,req.user.surname, oldMail], (err, result) => {
-      if (err) {
-        console.error('Error in modify profile:', err.stack);
-        res.status(500).send('Error in modify profile');
-      }else{
-        console.log("Good job");
-        res.redirect("/");
-      }
-    });
-})
-
 app.post("/send_email", (req, res) =>{
     var _name = req.body.name;
     var _email = req.body.email;

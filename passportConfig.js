@@ -76,7 +76,7 @@ function initialize(passport){
     passport.use(new GoogleStrategy({
         clientID: "466587212631-1drsdqg1gsviocjoct1b701in9tgt342.apps.googleusercontent.com",
         clientSecret: "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",
-        callbackURL: "http://localhost:4050/auth/google/callback"
+        callbackURL: "http://localhost:4060/auth/google/callback"
         },
         authenticateGoogleUser
         )
