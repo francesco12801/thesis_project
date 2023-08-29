@@ -4,23 +4,32 @@ const { pool } = require("./dbConfing");
 const bcrypt = require('bcrypt'); 
 const bodyParser = require('body-parser');
 var path = require('path'); 
-const fileUpload = require('express-fileupload');
 require("dotenv").config();
 const session = require('express-session'); 
 const flash = require("express-flash"); 
 const passport = require("passport"); 
 const nodeMailer = require('nodemailer');
+const multer = require("multer");
 
 var request = require('request-promise');
 const initializePassport = require("./passportConfig"); 
 var result;
-initializePassport(passport); 
+initializePassport(passport);
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, 'public/uploads/')
+    },
+    filename: function(req, file, cb) {
+        cb(null, file.originalname);
+    }
+})
+const upload = multer({ storage: storage });
 
 const PORT = process.env.PORT || 4050; 
 
 app.set('view engine', 'ejs');
-app.use(express.urlencoded({ extended: false})); 
-app.use(fileUpload());
+app.use(express.urlencoded({ extended: true})); 
 app.use(express.static(path.join(__dirname,'public'))); 
 
 app.use(session({
@@ -48,13 +57,18 @@ app.get('/users/login', checkAuthenticated, (req, res) => {
     res.render("login.ejs");
 });
 
-
 app.get('/users/profile',checkNotAuthenticated, (req, res) =>{
-    res.render("profile", { user: req.user.name }); 
+    res.render("profile", { user: req.user.name, imgSrc: req.user.img_src, bio: req.user.bio, username: req.user.username});
 });
 
 app.get('/users/editProfile',checkNotAuthenticated, (req, res) =>{
-    res.render("editProfile",{ user: req.user});
+    res.render("editProfile",{ user: req.user });
+});
+
+
+app.get("/users/partners", checkNotAuthenticated, (req, res) => {
+    const clubs = require('./public/jsonFiles/discoList.json');
+    res.render("partners", { clubs });
 });
 
 
@@ -62,7 +76,7 @@ app.get("/logout",(req, res) => {
     req.session.destroy();
     res.redirect('/');
 });
-  
+
 
 app.get('/users/map', checkNotAuthenticated, (req,res) => {
     res.render("map");
@@ -241,8 +255,8 @@ app.post("/send_email", (req, res) =>{
 })
 
 
-app.post('/users/editProfile', (req, res) => {
-    const { username, email, address, p_num } = req.body;
+app.post('/users/editProfile', upload.single('profileImage'), (req, res) => {
+    const { username, email, address, p_num, bio } = req.body;
     var oldUser = req.user.username;
     //query che aggiorna il database dei favoriti
     pool.query(`UPDATE fav
@@ -252,11 +266,12 @@ app.post('/users/editProfile', (req, res) => {
         if (err) throw err;
     });
     var oldMail = req.user.email;
+    var imgSrc = req.file ? req.file.originalname : req.user.img_src;
     pool.query(`
                 UPDATE users 
-                SET username = $1, email = $2, address = $3, p_num = $4
-                WHERE name = $5 and surname = $6 and email = $7;
-                `, [username, email, address, p_num, req.user.name,req.user.surname, oldMail], (err, result) => {
+                SET username = $1, email = $2, address = $3, p_num = $4, bio = $5, img_src = $6
+                WHERE name = $7 and surname = $8 and email = $9;
+                `, [username, email, address, p_num, bio, imgSrc, req.user.name,req.user.surname, oldMail], (err, result) => {
       if (err) {
         console.error('Error in modify profile:', err.stack);
         res.status(500).send('Error in modify profile');
@@ -266,20 +281,6 @@ app.post('/users/editProfile', (req, res) => {
       }
     });
 })
-
-
-app.post('/upload', (req, res) => {
-    
-    const { image } = req.files;
-
-    // If no image submitted, exit
-    if (!image) return res.sendStatus(400);
-
-    // Move the uploaded image to our upload folder
-    image.mv(__dirname + '/upload/' + image.name);
-
-    res.sendStatus(200);
-});
 
 
 app.post('/search-for-local', (req, res) =>{
@@ -308,7 +309,19 @@ function checkAuthenticated(req, res, next) {
   }
 
 
+app.get("/auth/google",
+    passport.authenticate('google', { scope: ["profile", "email"] })
+);
+
+app.get("/auth/google/callback",
+    passport.authenticate('google', { failureRedirect: "/" }),
+    (req, res) => {
+        // Dopo il login, reindirizza all'area riservata
+        res.redirect("/users/profile");
+    }
+);
+
+
 app.listen(PORT, () =>{
     console.log(`Server running on port ${PORT}`);
 });
-
