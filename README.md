@@ -44,5 +44,5 @@ Task Federico:
 - pagina con i contatti DONE
 - creare e modificare bio DONE
 - finestra informativa per i locali sulla mappa DONE
-- login tramite google
-- galleria fotografica
+- login Google DONE
+- sezione partners DONE
