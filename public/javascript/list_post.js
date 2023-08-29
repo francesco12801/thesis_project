@@ -1,4 +1,4 @@
-fetch("/users/get_post")
+fetch("/users/get_post/0")
 .then(response => response.json())
 .then(data => {
     var div_cont = document.getElementById('');

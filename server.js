@@ -80,13 +80,15 @@ app.get('/users/editProfile',checkNotAuthenticated, (req, res) =>{
     res.render("editProfile",{ user: req.user});
 });
 
-app.get('/review/list',checkNotAuthenticated, (req,res) => {
+app.get('/review/list/:name',checkNotAuthenticated, (req,res) => {
+    var name = req.params.name == '0' ? req.user.username : req.params.name;
     pool.query(`SELECT *
                 FROM reviews
-                WHERE username = $1`, [req.user.username], (err,results) => {
+                WHERE username = $1`, [name], (err,results) => {
                     if (err) throw err;
                     res.send(JSON.stringify(results.rows));
-                })
+                });
+    
 });
 
 app.get('/socialNetwork', checkNotAuthenticated, (req,res) => {
@@ -106,12 +108,13 @@ app.post("/send_post", checkNotAuthenticated, (req,res) => {
                 });
     res.render('socialNetwork',{user: req.user});
 });
-app.get('/users/get_post', checkNotAuthenticated, (req,res) => {
+app.get('/users/get_post/:name', checkNotAuthenticated, (req,res) => {
+    var name = req.params.name == '0' ? req.user.username : req.params.name;
     pool.query(`
                 SELECT *
                 FROM post
                 WHERE username = $1
-                ORDER BY id DESC`,[req.user.username],(err, results) => {
+                ORDER BY id DESC`,[name],(err, results) => {
                     if(err){
                         throw err; 
                     }
@@ -231,7 +234,11 @@ app.post("/logout",(req, res) => {
       }
 });
 
-
+app.get('/users/profile/:username', (req, res) => {
+    var utente = req.params.username;
+    const data = {user : utente};
+    res.render('profile_public', data); 
+});
 
 app.post("/users/deleteProfile", (req,res) => {
     pool.query(`
@@ -269,7 +276,7 @@ app.post("/users/deleteProfile", (req,res) => {
   
 
 app.get('/users/map', checkNotAuthenticated, (req,res) => {
-    res.render("map");
+    res.render("map", { user: req.user.name });
 })
 
 
@@ -384,10 +391,11 @@ app.post('/users/login', passport.authenticate('local',{
 }));
 
 
-app.get("/profile/list", (req,res) => {
+app.get("/profile/list/:name", (req,res) => {
+    var name = req.params.name == '0' ? req.user.username : req.params.name;
     pool.query(`SELECT *
                 FROM fav
-                WHERE utente = $1`, [req.user.username], (err,results) => {
+                WHERE utente = $1`, [name], (err,results) => {
                     if (err) throw err;
                     res.send(JSON.stringify(results.rows));
                 })

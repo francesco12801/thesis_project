@@ -17,7 +17,7 @@ fetch('/get_post')
         heart_id = 'heart' + data[i].id;
         post = createHTML(`
                         <div class="post">
-                            <h3>${data[i].username}</h3>
+                            <h3><a href='/users/profile/${data[i].username}'>${data[i].username}</a></h3>
                             <p>${data[i].text}</p>
                             <i class="${liked_post.length > 0 ? 'fa-solid fa-heart': 'fa-regular fa-heart'}" id='${heart_id}' style="position: relative;"></i>
                        </div>

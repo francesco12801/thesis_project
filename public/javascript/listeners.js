@@ -31,9 +31,7 @@ function friendsPopUp(){
 function moveNav() {
     var sidebar = document.getElementById("mySideBar");
     var sidebarWidth = sidebar.style.width;
-    console.log("0 ");
     if ($(window).width() >= 768){
-      console.log("1 ");
       if (sidebarWidth === '250px') {
           sidebar.style.width = "0";
           sidebar.style.display = "none";
@@ -45,6 +43,7 @@ function moveNav() {
     }
 
 function logOut(){
+    window.history.replaceState(null, null, '/');
     fetch("/logout", {
         method: 'POST',
     }

@@ -1,4 +1,4 @@
-fetch('/review/list')
+fetch('/review/list/0')
 .then(response => response.json())
 .then(data => {
     var box_rev = document.getElementById('container-reviews-grid');

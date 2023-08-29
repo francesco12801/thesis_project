@@ -8,7 +8,7 @@ fetch('/profile/list')
     var found = [];
 
     for (var i = 0; i < data.length; i++){
-        const response = await fetch('/review/list');
+        const response = await fetch('/review/list/0');
         const lista_recensiti = await response.json();
 
         if (lista_recensiti.length > 0){
