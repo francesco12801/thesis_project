@@ -6,11 +6,12 @@ function handlePopUp(){
 }
 
 function deletePopUp(){
-    document.getElementById("popup-container").style.display = "none";
+    // document.getElementById("popup-container").style.display = "none";
+    window.history.replaceState(null, null, '/');
     fetch("/users/deleteProfile",  {
         method: 'POST',
     });
-    window.open("/","_self");
+    window.location.replace('/');
     return;
 }
 
@@ -49,7 +50,6 @@ function logOut(){
     }
     );
     window.location.replace('/');
-    // window.open("/","_self");
     return;
 }
 
@@ -57,8 +57,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const popupButton = document.getElementById("popup-button");
     const popup = document.getElementById("post-popup");
     const closePopup = document.getElementById("close-popup");
-    const popupTextarea = document.getElementById("popup-textarea");
-    
       
     popupButton.addEventListener("click", () => {
         if (popup.style.display == "none")

@@ -106,15 +106,41 @@ app.post("/send_post", checkNotAuthenticated, (req,res) => {
                 });
     res.render('socialNetwork',{user: req.user});
 });
-app.get("/get_post",checkNotAuthenticated, (req,res) => {
+app.get('/users/get_post', checkNotAuthenticated, (req,res) => {
     pool.query(`
                 SELECT *
-                FROM post`, (err, results) => {
+                FROM post
+                WHERE username = $1
+                ORDER BY id DESC`,[req.user.username],(err, results) => {
                     if(err){
                         throw err; 
                     }
                     res.send(JSON.stringify(results.rows));
                 });
+});
+
+app.get("/get_post",checkNotAuthenticated, (req,res) => {
+    pool.query(`
+                SELECT *
+                FROM post
+                ORDER BY id DESC`, (err, results) => {
+                    if(err){
+                        throw err; 
+                    }
+                    res.send(JSON.stringify(results.rows));
+                });
+})
+app.post('/posts/:postId/delete', (req, res) => {
+    const postId = req.params.postId;
+    pool.query(`DELETE FROM post
+                WHERE id = $1`, [postId], (err, results) => {
+                    if (err) throw err;
+                });
+    pool.query(`DELETE FROM likes
+                WHERE post_id = $1`, [postId], (err, results) => {
+                    if (err) throw err;
+                });
+    
 })
 //aggiungere like ad un post
 app.put("/posts/:postId/like", (req, res) => {
@@ -146,7 +172,7 @@ app.put("/posts/:postId/like", (req, res) => {
 
 app.get('/post/get_like',checkNotAuthenticated, (req,res) => {
     pool.query(`
-                SELECT *
+                SELECT post_id
                 FROM likes
                 WHERE username = $1`, [req.user.username], (err, results) => {
                     if(err){
@@ -205,8 +231,9 @@ app.post("/logout",(req, res) => {
       }
 });
 
+
+
 app.post("/users/deleteProfile", (req,res) => {
-    res.redirect("/users/login");
     pool.query(`
                 DELETE FROM users 
                 WHERE username = $1`, [req.user.username], (err,results) => {
@@ -236,9 +263,8 @@ app.post("/users/deleteProfile", (req,res) => {
                 WHERE username = $1`, [req.user.username], (err,results) => {
                     if (err) throw err;
                 }
-                );              
+                );            
     req.session.destroy();
-    
 });
   
 
