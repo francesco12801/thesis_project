@@ -35,4 +35,4 @@ Task Federico:
 - creare e modificare bio DONE
 - finestra informativa per i locali sulla mappa DONE
 - login Google DONE
-- sezione fotografica con top locali WIP
+- sezione partners DONE
