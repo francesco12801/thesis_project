@@ -19,6 +19,7 @@ fetch('/get_post')
                         <div class="post">
                             <h3><a href='/users/profile/${data[i].username}'>${data[i].username}</a></h3>
                             <p>${data[i].text}</p>
+                            ${data[i].img_src ? `<img src="../uploads/${data[i].img_src}" style="max-width: 30%; max-height: auto; margin-bottom: 20px;" />` : ''}
                             <i class="${liked_post.length > 0 ? 'fa-solid fa-heart': 'fa-regular fa-heart'}" id='${heart_id}' style="position: relative;"></i>
                        </div>
         `);

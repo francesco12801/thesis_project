@@ -110,13 +110,14 @@ app.get('/socialNetwork', checkNotAuthenticated, (req,res) => {
     res.render('socialNetwork',{user: req.user});
 });
 
-app.post("/send_post", checkNotAuthenticated, (req,res) => {
+app.post("/send_post", checkNotAuthenticated, upload.single('postImage'), (req,res) => {
     const post = req.body.posttext;
+    const imgSrc = req.file ? req.file.originalname : null;
 
     pool.query(`
-                INSERT INTO post (username, text)
-                VALUES ($1,$2)
-                RETURNING *`, [req.user.username,post], (err,res) => {
+                INSERT INTO post (username, text, img_src)
+                VALUES ($1, $2, $3)
+                RETURNING *`, [req.user.username, post, imgSrc], (err,res) => {
                     if(err){
                         throw err; 
                     }
@@ -233,7 +234,7 @@ app.post("/send_email/friends", (req, res) =>{
         else {
             console.log("email sent");
         }
-        res.render("profile", { user: req.user.name });
+        res.render("profile", { user: req.user.name, imgSrc: req.user.img_src, bio: req.user.bio, username: req.user.username });
     })
 });
 
@@ -251,8 +252,29 @@ app.post("/logout",(req, res) => {
 
 app.get('/users/profile/:username', (req, res) => {
     var utente = req.params.username;
-    const data = {user : utente};
-    res.render('profile_public', data); 
+
+    pool.query(
+        `SELECT name, img_src, bio, username
+        FROM users WHERE username = $1`, [utente], (error, result) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).send('Internal server error');
+            }
+            if (result.rows.length === 0) {
+                return res.status(404).send('User not found');
+            }
+            const userData = result.rows[0];
+
+            const data = {
+                user: userData.username,
+                imgSrc: userData.img_src,
+                bio: userData.bio
+            };
+
+            console.log("data", data);
+            res.render('profile_public', data);
+        }
+    );
 });
 
 app.post("/users/deleteProfile", (req,res) => {

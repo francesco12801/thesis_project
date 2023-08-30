@@ -26,6 +26,7 @@
                 <li><a href="/users/login">Login</a></li>
                 <li><a href="../../contacts.html">CONTACTS</a></li>
                 <li><a href="/users/profile">PROFILE</a></li>
+                <li><a href="/users/partners">PARTNERS</a></li>
                 </ul>
             </nav>
         </div>
@@ -34,8 +35,18 @@
                 <div class="bg-white shadow overflow-hidden w-100">
                     <div class="px-4 pt-0 bg-white border-bottom">
                         <br />
-                        <div class="media align-items-end profile-header">
-                            <div class="profile py-4 mr-3 "><img src="../../iconpng/profile.jpg" alt="..." width="130" class="rounded-circle "></div>
+                        <div class="media align-items-center profile-header">
+                            <div class="profile py-4 mr-3 text-center">
+                                <% if (imgSrc) { %>
+                                    <img src="../../uploads/<%= imgSrc %>" alt="..." width="130" class="rounded-circle ">
+                                <% } else { %>
+                                    <img src="../../iconpng/profile.jpg" alt="..." width="130" class="rounded-circle ">
+                                <% } %>
+                                    <h6 style="margin-top: 20px;"><%= user %></h6>
+                                <% if (bio) { %>
+                                    <p style="text-align: center; font-size: 2ch; margin-top: 20px; margin-bottom: 20px; width: 300px;"><%= bio %></p>
+                                <% } %>
+                            </div>
                             <div class="media-body mb-4" >
                                 <center><h4 class = "mt-0 ml-2"></small><%=user%>'s profile  🥳</h4><br></center>
                             </div>
@@ -50,9 +61,9 @@
                     
                     
                     <script src="../../javascript/create_public_profile.js"></script>
-                        <div class="border-bottom">
-                            <div class="post-container" id="post-container" style="margin: 0;">
-
+                        <div>
+                            <div class="post-container" id="post-container" style="margin: auto 0 40px 0;">
+                                <!-- riempito da create_public_profile.js -->
                             </div>
                         </div>
                         <div class="border-bottom">
