@@ -23,6 +23,7 @@
     "express-fileupload": "^1.4.0",
     "express-flash": "^0.0.2",
     "express-session": "^1.17.3",
+    "fs": "^0.0.1-security",
     "googleapis": "^105.0.0",
     "multer": "^1.4.3",
     "nocache": "^3.0.4",

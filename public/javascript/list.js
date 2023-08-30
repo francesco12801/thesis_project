@@ -4,11 +4,11 @@ fetch("/jsonFiles/discoList.json")
   })
   .then(async function(data) {
 
-var fav_locals = await fetch('/profile/list').then(response => response.json())
+var fav_locals = await fetch('/profile/list/0').then(response => response.json())
       .then(data => {
       var local = [];
     for (var j = 0; j < data.length; j++){
-      console.log(data[j]);
+//       console.log(data[j]);
       local.push(data[j].title)
     }
     return local;

@@ -46,3 +46,6 @@ Task Federico:
 - finestra informativa per i locali sulla mappa DONE
 - login Google DONE
 - sezione partners DONE
+- post con foto
+- aggiunta immagine profilo e bio nei profili social
+- calendario google per lettura/scrittura eventi
