@@ -13,6 +13,7 @@ fetch("/users/get_post/0")
                         <div class="post">
                             <h3>${data[i].username}</h3>
                             <p>${data[i].text}</p>
+                            ${data[i].img_src ? `<img src="../uploads/${data[i].img_src}" style="max-width: 20%; max-height: auto; margin-bottom: 20px;" />` : ''}
                             <i class="fa-solid fa-trash" id ='${bin_id}'></i>
                        </div>
         `);

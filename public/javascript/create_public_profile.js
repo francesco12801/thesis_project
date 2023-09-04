@@ -29,10 +29,12 @@ fetch("/users/get_post/"+username)
     var post;
 
     for (var i = 0; i < data.length; i++){
+        console.log("data[i]", data[i]);
         post = createHTML(`
                         <div class="post">
                             <h3>${data[i].username}</h3>
                             <p>${data[i].text}</p>
+                            ${data[i].img_src ? `<img src="../../uploads/${data[i].img_src}" style="max-width: 20%; max-height: auto; margin-bottom: 20px;" />` : ''}
                        </div>
         `);
         container.appendChild(post);

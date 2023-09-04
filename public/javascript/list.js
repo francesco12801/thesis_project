@@ -60,6 +60,18 @@ var fav_locals = await fetch('/profile/list/0').then(response => response.json()
             </div>
           </div>
         `);
+document.addEventListener('click', function() {
+    const cardElements = document.querySelectorAll('.card');
+  
+    cardElements.forEach(card => {
+      const titleElement = card.querySelector('.card-title');
+      const localeName = titleElement.textContent;
+      titleElement.addEventListener('click', function() {
+        const encodedLocaleName = encodeURIComponent(localeName);
+        window.location.href = `/users/localPage?title=${encodedLocaleName}`;
+      });
+    });
+  });
 
       card.appendChild(heart);
 

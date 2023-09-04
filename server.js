@@ -10,7 +10,7 @@ const flash = require("express-flash");
 const passport = require("passport");
 const nodeMailer = require('nodemailer');
 const multer = require("multer");
-
+const ejs = require('ejs');
 var request = require('request-promise');
 const initializePassport = require("./passportConfig"); 
 var result;
@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
 })
 const upload = multer({ storage: storage });
 
-const PORT = process.env.PORT || 4060; 
+const PORT = process.env.PORT || 4020; 
 
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true})); 
@@ -52,6 +52,16 @@ app.get('/users/signup', checkAuthenticated, (req, res) => {
     res.render("signup.ejs");
 });
 
+app.get('/users/signupOrganizer', (req, res) =>{
+    res.render("signupOrganizer.ejs");
+});
+
+app.get('/users/localPage',checkNotAuthenticated, (req, res) =>{
+    const localeTitle = req.query.title;
+    res.render("localPage",{ localeTitle});
+});
+
+
 
 app.get('/users/login', checkAuthenticated, (req, res) => {
     res.render("login.ejs");
@@ -60,6 +70,148 @@ app.get('/users/login', checkAuthenticated, (req, res) => {
 app.get("/users/profile/review",checkNotAuthenticated, (req, res) => {
     res.render("review.ejs",{ user: req.user});
 });
+
+app.get("/profile/deleteReservation", (req,res) =>{
+    // console.log(req.query.title);
+    // console.log(req.query.surname);
+    console.log("ok siamo dentro bello");
+    pool.query(`
+        DELETE FROM book
+        WHERE name = $1 and surname = $2 and title = $3`, [req.query.name,req.query.surname,req.query.title], (err, results) => {
+            if (err) throw err;
+        }) 
+        console.log("ok siamo fuori bello");
+        return res.render("index");
+})
+
+app.get("/profile/getRole", (req, res) => {
+    pool.query(`SELECT ruolo
+                FROM users
+                WHERE name = $1 and surname = $2`, [req.query.name, req.query.surname], (err,results) => {
+                    if (err) throw err;
+                    res.send(JSON.stringify(results.rows));
+                    console.log(JSON.stringify(results.rows));
+                })
+});
+
+app.get("/profile/booking", (req,res) => {
+    console.log(req.query.name);
+    console.log(req.query.surname);
+    pool.query(`SELECT *
+                FROM book
+                WHERE name = $1 and surname = $2`, [req.query.name, req.query.surname], (err,results) => {
+                    if (err) throw err;
+                    res.send(JSON.stringify(results.rows));
+                    console.log(JSON.stringify(results.rows));
+                })
+});
+
+
+app.post('/users/signupOrganizer', async (req, res) =>{
+    let role = "organizer";
+    let {name, surname, CoName, coMail, CoRole, VatNumber, pass, passConf } = req.body; 
+    
+    let errors = []; 
+
+    if (!name || !surname || !CoName || !coMail || !CoRole || !pass || !passConf){
+        errors.push({message: "Please enter all fields"});
+    }
+
+    if (pass.length < 6){
+        errors.push({message: "Password must be at least six characters"});
+    }
+
+    if (pass != passConf){
+        errors.push({message: "Password do not match!!!"});
+    }
+
+    if (errors.length > 0){
+        res.render("signupOrganizer", {errors})
+    }else{
+        // form validation passed 
+        let hashedPassword = await bcrypt.hash(pass, 10); 
+        console.log(hashedPassword);
+
+        pool.query(
+            `SELECT * FROM company
+            WHERE comail = $1`, [coMail], (err, results) =>{
+                if (err){
+                    throw err;
+                }
+                console.log(results.rows);
+                if (results.rows.length > 0){
+                    errors.push({message: "Email already in use. "});
+                    res.render('signupOrganizer', {errors}); 
+                }else{
+                    pool.query(
+                        `INSERT INTO company (name, surname,coname, comail, corole, vatnumber, pass)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7)
+                        RETURNING vatnumber,pass`, [name, surname,CoName, coMail, CoRole, VatNumber,hashedPassword], (err, results) =>{
+                            if(err){
+                                throw err; 
+                            }
+                        }
+                    )
+                    pool.query(
+                        `INSERT INTO users (name, surname, email, username, pw, ruolo)
+                        VALUES ($1, $2, $3, $4, $5, $6)
+                        RETURNING email,pw`, [name, surname, coMail, VatNumber,hashedPassword, role], (err, results) =>{
+                            if(err){
+                                throw err; 
+                            }
+                    
+                            req.flash('success_msg', "You are now registered. Please log in. ");
+                            res.redirect("/users/login");
+                        }
+                    )      
+                }
+            }
+        )
+    }
+});
+
+
+app.post('/profile/addToMap', (req, res) => {
+    // Ottenere i dati dalla richiesta o dal database
+    const name = req.body.organizerName;
+    const surname = req.body.organizerSurname;
+    const compName = req.body.companyName;
+    const partyName = req.body.partyName;
+    const date = req.body.partyDate;
+
+
+    pool.query(
+        `INSERT INTO party (nomeorg, cognomeorg, compnome, partyname, data)
+        VALUES ($1, $2, $3, $4, $5)`, [name, surname, compName, partyName,date], (err, results) =>{
+            if(err){
+                throw err; 
+            }
+        }
+    )
+
+    res.render("map");
+});
+
+app.get('/profile/getParty', (req,res) => {
+    pool.query(`SELECT *
+                FROM party`, (err,results) => {
+                    if (err) throw err;
+                    res.send(JSON.stringify(results.rows));
+                    console.log(JSON.stringify(results.rows));
+                })
+});
+
+
+app.post('/users/bookEn',(req, res) => {
+    let {name, surname, title, table ,entries} = req.body;
+    pool.query(`
+        INSERT INTO book
+        VALUES ($1,$2,$3,$4,$5)`, [name,title,surname,table,entries], (err, res) => {
+            if (err) throw err;
+    })
+    res.redirect("/");
+})
+
 
 app.post("/users/profile/review", (req, res) => {
     const locale = req.body.locale;
@@ -82,7 +234,7 @@ app.post("/users/profile/review", (req, res) => {
 
 
 app.get('/users/profile',checkNotAuthenticated, (req, res) =>{
-    res.render("profile", { user: req.user.name, imgSrc: req.user.img_src, bio: req.user.bio, username: req.user.username});
+    res.render("profile", { user: req.user.name, imgSrc: req.user.img_src, bio: req.user.bio, username: req.user.username, su: req.user.surname});
 });
 
 app.get('/users/editProfile',checkNotAuthenticated, (req, res) =>{
@@ -110,13 +262,14 @@ app.get('/socialNetwork', checkNotAuthenticated, (req,res) => {
     res.render('socialNetwork',{user: req.user});
 });
 
-app.post("/send_post", checkNotAuthenticated, (req,res) => {
+app.post("/send_post", checkNotAuthenticated, upload.single('postImage'), (req,res) => {
     const post = req.body.posttext;
+    const imgSrc = req.file ? req.file.originalname : null;
 
     pool.query(`
-                INSERT INTO post (username, text)
-                VALUES ($1,$2)
-                RETURNING *`, [req.user.username,post], (err,res) => {
+                INSERT INTO post (username, text, img_src)
+                VALUES ($1, $2, $3)
+                RETURNING *`, [req.user.username, post, imgSrc], (err,res) => {
                     if(err){
                         throw err; 
                     }
@@ -233,7 +386,7 @@ app.post("/send_email/friends", (req, res) =>{
         else {
             console.log("email sent");
         }
-        res.render("profile", { user: req.user.name });
+        res.render("profile", { user: req.user.name, imgSrc: req.user.img_src, bio: req.user.bio, username: req.user.username, su: req.user.surname});
     })
 });
 
@@ -248,13 +401,32 @@ app.post("/logout",(req, res) => {
         res.status(500).send('Error during logout');
       }
 });
-
 app.get('/users/profile/:username', (req, res) => {
     var utente = req.params.username;
-    const data = {user : utente};
-    res.render('profile_public', data); 
-});
 
+    pool.query(
+        `SELECT name, img_src, bio, username
+        FROM users WHERE username = $1`, [utente], (error, result) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).send('Internal server error');
+            }
+            if (result.rows.length === 0) {
+                return res.status(404).send('User not found');
+            }
+            const userData = result.rows[0];
+
+            const data = {
+                user: userData.username,
+                imgSrc: userData.img_src,
+                bio: userData.bio
+            };
+
+            console.log("data", data);
+            res.render('profile_public', data);
+        }
+    );
+});
 app.post("/users/deleteProfile", (req,res) => {
     pool.query(`
                 DELETE FROM users 
@@ -332,7 +504,7 @@ app.get('/map-data', async (req, res) =>{
 
 
 app.post('/users/signup', async (req, res) =>{
-
+    let role = "utente";
     pool.query(`
     CREATE TABLE IF NOT EXISTS fav (utente VARCHAR NOT NULL, 
                                     title VARCHAR(100) NOT NULL,
@@ -383,9 +555,9 @@ app.post('/users/signup', async (req, res) =>{
                     res.render('signup', {errors}); 
                 }else{
                     pool.query(
-                        `INSERT INTO users (name, surname, username, email, b_day, address, p_num, pw)
-                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8 )
-                        RETURNING username,pw`, [name, surname, username, email, b_day, address, p_num, hashedPassword], (err, results) =>{
+                        `INSERT INTO users (name, surname, username, email, b_day, address, p_num, pw, ruolo)
+                        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9 )
+                        RETURNING username,pw`, [name, surname, username, email, b_day, address, p_num, hashedPassword,role], (err, results) =>{
                             if(err){
                                 throw err; 
                             }
@@ -398,6 +570,7 @@ app.post('/users/signup', async (req, res) =>{
         )
     }
 });
+
 
 app.post('/users/login', passport.authenticate('local',{
     successRedirect: '/users/profile',

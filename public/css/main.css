@@ -5267,6 +5267,7 @@ input, select, textarea {
   }
 
   /* POPUP per invitare amici */
+
   .popup-friends {
     display: none;
     position: fixed;
@@ -5287,14 +5288,11 @@ input, select, textarea {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   }
   #openPopup {
-    position: absolute;
-    bottom: 50px;
-    left: 50%;
-    transform: translateX(-50%);
+    display: block;
 	transition: left 0.3s ease-in-out;
   }
   #openPopup.hidden {
-    opacity: 0;
+    display: none;
   }
 
 /* POST FEED */
