@@ -38,6 +38,13 @@
                             <div class="field">
                                 <label for="BirthDay">Birthday</label>    
                                 <input type="date" name="b_day" id="b_day" required/>
+                                <script>
+                                    const birthdateInput = document.getElementById('b_day');
+                                    const today = new Date();
+                                    const maxDate = new Date(today.getFullYear() - 16, today.getMonth(), today.getDate());
+                                    const formattedMaxDate = maxDate.toISOString().split('T')[0];
+                                    birthdateInput.setAttribute('max', formattedMaxDate);
+                                </script>
                             </div>
                             <br />
                             <div class="field">

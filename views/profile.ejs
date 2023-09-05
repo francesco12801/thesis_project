@@ -3,15 +3,15 @@
     <head>
         <meta charset="utf-8">
         <title>Let's Party Profile</title>
-        <link rel = "icon" href = "iconpng/summercocktail.png" type = "image/x-icon"> 
-        <link rel="stylesheet" href="../css/main.css">
+        <link rel = "icon" href = "../iconpng/summercocktail.png" type = "image/x-icon"> 
+        <link rel="stylesheet" href="/css/main.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
         
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
     </head>
-    <body style="background-size: cover;">
+    <body style="background-image: url('../photos/overlay.png'), linear-gradient(to bottom,#21293100, #21293127,#21293150,#21293153,#2129317c,#212931b0,#212931af,#212931cb,#212931ee,#212931fd), url('../photos/fiesta3.jpg');background-size: cover;">
         <script>
             window.myApp = window.myApp || {};
               window.myApp.user = '<%=user%>';
@@ -33,7 +33,7 @@
                 <li><a href="/users/partners">PARTNERS</a></li>
                 </ul>
             </nav>
-        </div>
+        <br />
             <footer id="footer" style="background-color: transparent;">
                 <div id="mySideBar" class="sidebar">
                     <a href="/users/editProfile">EDIT PROFILE</a>
@@ -137,7 +137,7 @@
                             <br />
                             <script src="../javascript/book.js"></script>
 
-                                <form method='GET' action="/profile/booking" id="form-submit">
+                                
                                     <div id="grid-container">
 
                                         <div class="grid-layout-cards" id="grid-layout-cards-book">
@@ -164,11 +164,11 @@
 
                             <script src="../javascript/display_rev.js"></script>
                             
-                            <form method='GET' action="/review/list/0" id="form-submit">  
+                            <!-- <form method='GET' action="/review/list/0" id="form-submit">   -->
                                 <div class="container-reviews-grid" id="container-reviews-grid">
                
                                 </div>
-                            </form>
+                            <!-- </form> -->
                             <br>
                         </div>
 
@@ -232,6 +232,7 @@
                       <li>Design: <a href="https://www.instagram.com/francescotinessa_/" target="_blank"> Francesco Tinessa </a></li>
                     </ul>
                 </div>
+        </div>
         <!-- Scripts -->
 			<script src="../javascript/jquery.min.js"></script>
 			<script src="../javascript/jquery.scrollex.min.js"></script>

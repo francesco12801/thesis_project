@@ -26,7 +26,7 @@ const storage = multer.diskStorage({
 })
 const upload = multer({ storage: storage });
 
-const PORT = process.env.PORT || 4020; 
+const PORT = process.env.PORT || 4050; 
 
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: true})); 
@@ -600,14 +600,19 @@ app.post('/users/map/update',(req, res) => {
 })
 
 app.post('/review/list/update', (req,res) => {
-    let {title, username} = req.body.card;
+    console.log(req.body);
+    let username = req.body.username; 
+    let title = req.body.title; 
+    
+    console.log(username);
+    console.log(title);
     pool.query(`
         DELETE FROM reviews
-        WHERE username = $2 and title = $1`,[title,username], (err,res) => {
+        WHERE username = $2 and title = $1`,[title,username], (err,result) => {
             if (err) throw err;
         }
         );
-    
+    res.redirect('/users/profile');
 });
 
 app.post('/users/map/delete', (req,res) => {

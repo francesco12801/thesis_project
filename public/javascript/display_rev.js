@@ -13,9 +13,10 @@ fetch('/review/list/0')
             <h1 class="box-title">${data[i].title}</h1>
             <h3 class="box-subtle">${data[i].username}</h3>
             <p class="box-text">${data[i].rev}</p>
-            <i onclick="binClick()" type="submit" class="fas fa-trash" id="${id}" style="color: black;" ></i>
-        </div>
-        `);
+            <button class="trash-button" data-username="${data[i].username}" data-title="${data[i].title}">
+                <i class="fas fa-trash" style="color: black;"></i>
+            </button>
+        </div>`);
         bin_map.set(id,{
             title: data[i].title,
             username: data[i].username,
@@ -23,26 +24,33 @@ fetch('/review/list/0')
         box_rev.appendChild(card);
     }
     //aggiungo listener
-    for (var i = 0; i < bin_map.size; i++){
-        (function (index) {
-            document.getElementById('bin'+i).addEventListener('click', function() {
-                bn = document.getElementById('bin'+index);
-                var params = {
-                    card: bin_map.get('bin'+index),
-                    }
-                fetch('/review/list/update', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(params)
-                });
-                return;
-            })
-        })(i);
-        
-    }
+    // Aggiungi un listener a tutti i pulsanti "trash" con la classe "trash-button"
+const trashButtons = document.querySelectorAll('.trash-button');
 
+trashButtons.forEach(button => {
+    button.addEventListener('click', function(event) {
+        const username = this.getAttribute('data-username');
+        const title = this.getAttribute('data-title');
+        
+        // Esegui la chiamata al server con username e title
+        fetch('/review/list/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, title })
+        })
+        .then(response => {
+            console.log("lo stronzo ha risposto");
+            window.location.href = '/users/profile';
+        })
+        .catch(error => {
+            // Gestisci errori di rete o altre eccezioni
+        });
+    });
+});
+
+        
 })
 .catch(error => console.error(error));
 
