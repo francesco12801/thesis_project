@@ -692,21 +692,13 @@ app.post("/send_email", (req, res) =>{
 
 app.post('/users/editProfile', upload.single('profileImage'), (req, res) => {
     const { username, email, address, p_num, bio } = req.body;
-    var oldUser = req.user.username;
-    //query che aggiorna il database dei favoriti
-    pool.query(`UPDATE fav
-                SET utente = $1
-                WHERE utente = $2;
-    `, [username, oldUser], (err, res) => {
-        if (err) throw err;
-    });
     var oldMail = req.user.email;
     var imgSrc = req.file ? req.file.originalname : req.user.img_src;
     pool.query(`
                 UPDATE users 
                 SET username = $1, email = $2, address = $3, p_num = $4, bio = $5, img_src = $6
                 WHERE name = $7 and surname = $8 and email = $9;
-                `, [username, email, address, p_num, bio, imgSrc, req.user.name,req.user.surname, oldMail], (err, result) => {
+                `, [req.user.username, email, address, p_num, bio, imgSrc, req.user.name,req.user.surname, oldMail], (err, result) => {
       if (err) {
         console.error('Error in modify profile:', err.stack);
         res.status(500).send('Error in modify profile');

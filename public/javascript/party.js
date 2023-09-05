@@ -15,8 +15,22 @@ fetch('/profile/getParty')
     const cognomeOrganizzatore = item.cognomeorg;
     const companyName = item.compnome;
     const partyName = item.partyname;
-    const data = item.data;
+    
     console.log(partyName);
+
+    
+    const current_date = item.data;
+
+    const dateObject = new Date(current_date);
+    const data = formatDate(dateObject);
+
+    function formatDate(date) {
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}-${month}-${year}`;
+    }
+
 
     // Ora puoi utilizzare queste variabili per costruire la tua card
     const card = createHTML(`
